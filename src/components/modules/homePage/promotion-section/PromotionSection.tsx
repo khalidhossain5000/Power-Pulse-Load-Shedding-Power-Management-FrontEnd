@@ -294,7 +294,7 @@ const PromotionSection = () => {
     return () => controls.stop();
   }, [priceInView, reduce, count]);
 
-  const ctaHref = isLoggedIn ? "/dashboard" : "/login";
+  const ctaHref = isLoggedIn ? "/customer/dashboard" : "/login";
   const ctaLabel = isLoggedIn ? "Go to dashboard" : "Sign in to get priority";
 
   return (
