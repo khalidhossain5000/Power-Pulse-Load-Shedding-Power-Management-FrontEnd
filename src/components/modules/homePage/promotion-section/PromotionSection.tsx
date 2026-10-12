@@ -97,7 +97,7 @@ const RestoreQueue = ({ reduce }: { reduce: boolean }) => {
   const status = STATUS[phase];
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-foreground/15">
+    <div className="relative w-full overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-foreground/15">
       <AnimatePresence>
         {phase === 1 && (
           <motion.div
@@ -112,7 +112,7 @@ const RestoreQueue = ({ reduce }: { reduce: boolean }) => {
       </AnimatePresence>
 
       <div className="flex items-center gap-4 border-b border-border bg-muted px-5 py-4 sm:px-6">
-        <div className="relative grid h-3 w-3 place-items-center">
+        <div className="relative grid h-3 w-3 shrink-0 place-items-center">
           <span
             className={`absolute h-3 w-3 rounded-full transition-colors duration-500 ${status.dot}`}
           />
@@ -188,7 +188,7 @@ const RestoreQueue = ({ reduce }: { reduce: boolean }) => {
               </span>
 
               <span
-                className={`flex-1 truncate text-sm font-medium ${
+                className={`min-w-0 flex-1 truncate text-sm font-medium ${
                   isYou ? "text-foreground" : "text-muted-foreground"
                 }`}
               >
@@ -208,7 +208,7 @@ const RestoreQueue = ({ reduce }: { reduce: boolean }) => {
                         stiffness: 400,
                         damping: 14,
                       }}
-                      className="flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-emerald-950"
+                      className="flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-emerald-950"
                     >
                       <svg
                         width="12"
@@ -235,7 +235,7 @@ const RestoreQueue = ({ reduce }: { reduce: boolean }) => {
                         stiffness: 400,
                         damping: 16,
                       }}
-                      className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-primary-foreground ${GRADIENT}`}
+                      className={`flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-primary-foreground ${GRADIENT}`}
                     >
                       <svg
                         width="12"
@@ -253,7 +253,7 @@ const RestoreQueue = ({ reduce }: { reduce: boolean }) => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="rounded-full bg-border px-3 py-1 text-xs font-medium text-muted-foreground"
+                      className="shrink-0 rounded-full bg-border px-3 py-1 text-xs font-medium text-muted-foreground"
                     >
                       Standard
                     </motion.span>
@@ -314,33 +314,14 @@ const PromotionSection = () => {
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <svg
-        aria-hidden
-        viewBox="0 0 1200 200"
-        preserveAspectRatio="none"
-        className="pointer-events-none absolute left-0 top-1/2 -z-10 h-40 w-full -translate-y-1/2 opacity-60"
-      >
-        <motion.path
-          fill="none"
-          strokeWidth={1.5}
-          vectorEffect="non-scaling-stroke"
-          className="stroke-chart-2/40"
-          initial={{ pathLength: reduce ? 1 : 0 }}
-          whileInView={{ pathLength: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 2.4, ease: "easeInOut" }}
-          d="M0 100 H380 L410 100 L430 100 L460 100 H700 L730 100 L755 30 L790 175 L820 60 L840 100 H1200"
-        />
-      </svg>
-
       <motion.div
         variants={container}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
-        className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16"
+        className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16"
       >
-        <div>
+        <div className="min-w-0">
           <motion.div
             variants={rise}
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm font-medium text-muted-foreground"
@@ -531,7 +512,7 @@ const PromotionSection = () => {
           </motion.div>
         </div>
 
-        <motion.div variants={rise} className="relative">
+        <motion.div variants={rise} className="relative w-full min-w-0">
           <RestoreQueue reduce={reduce} />
         </motion.div>
       </motion.div>
