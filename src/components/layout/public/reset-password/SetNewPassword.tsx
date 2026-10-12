@@ -25,6 +25,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
+// full circle (r = 46) starting at 3 o'clock, drawn clockwise
+const RING_PATH = "M96 50a46 46 0 1 1-92 0a46 46 0 1 1 92 0";
+
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 28, scale: 0.97 },
   visible: {
@@ -136,18 +139,14 @@ const SetNewPassword = () => {
                 className="absolute inset-0 size-full -rotate-90"
                 aria-hidden
               >
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="46"
+                <path
+                  d={RING_PATH}
                   fill="none"
                   strokeWidth="3"
                   className="stroke-border"
                 />
-                <motion.circle
-                  cx="50"
-                  cy="50"
-                  r="46"
+                <motion.path
+                  d={RING_PATH}
                   fill="none"
                   strokeWidth="3"
                   strokeLinecap="round"
