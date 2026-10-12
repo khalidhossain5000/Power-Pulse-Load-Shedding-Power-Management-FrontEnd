@@ -144,6 +144,9 @@ export function getTechnicianCount(){
 
 //send otp
 
-export function sendForgotPassOtp(){
-    return apiClient("/auth/forgot-password-otp")
+export function sendForgotPassOtp(payload:{email:string}){
+    return apiClient("/auth/forgot-password-otp",{
+        method:"POST",
+        body:payload
+    })
 }

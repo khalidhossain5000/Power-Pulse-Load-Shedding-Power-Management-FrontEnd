@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSendForgotPassOtp } from "@/hooks";
+import { toast } from "sonner";
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 28, scale: 0.97 },
@@ -26,7 +27,11 @@ const cardVariants: Variants = {
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: "easeOut" },
+  },
 };
 
 const particles = [
@@ -43,13 +48,37 @@ const particles = [
 ];
 
 const ResetPassword = () => {
-  const {mutate,isPending} = useSendForgotPassOtp()
+  const { mutate, isPending } = useSendForgotPassOtp();
 
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const email = new FormData(e.currentTarget).get("email");
-console.log(email,"reset email")
-  }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const email = new FormData(e.currentTarget).get("email") as string;
+    console.log(email, "reset email");
+    if (!email) {
+      toast.error("Email is required Fill it");
+      return;
+    }
+    mutate(
+      { email },
+      {
+        onSuccess: async (res) => {
+          toast.success("You account is verified and active now");
+        },
+        onError: (err: any) => {
+          console.log(
+            err,
+            "error in otp Sending",
+            err?.data?.message || err?.response?._data?.message
+          );
+          toast.error(
+            err?.data?.message ||
+              err?.response?._data?.message ||
+              "Something went wrong while OTP sending"
+          );
+        },
+      }
+    );
+  };
   return (
     <MotionConfig reducedMotion="user">
       <section className="relative isolate flex min-h-svh w-full items-center justify-center overflow-hidden px-4 py-16">
