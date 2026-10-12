@@ -1,6 +1,6 @@
 # Power Pulse - Load Shedding & Power Management Platform ⚡
 
-**Live demo:** [Click here to view](https://next-level-assignment-7.vercel.app)
+**Live demo:** [Click here to view](https://power-pulse-project-front-end.vercel.app)
 
 ---
 
