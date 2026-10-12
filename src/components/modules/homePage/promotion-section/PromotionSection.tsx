@@ -393,7 +393,7 @@ const PromotionSection = () => {
           </motion.ol>
 
           <motion.div variants={rise} className="mt-10">
-            <div className="relative inline-block w-full max-w-md overflow-hidden rounded-3xl p-[2px]">
+            <div className="relative inline-block w-full max-w-md overflow-hidden rounded-3xl p-0.5">
               {reduce ? (
                 <div aria-hidden className={`absolute inset-0 ${GRADIENT}`} />
               ) : (
@@ -410,7 +410,7 @@ const PromotionSection = () => {
                   />
                   <motion.div
                     aria-hidden
-                    className="absolute -inset-[100%] bg-conic from-transparent via-chart-2 to-transparent"
+                    className="absolute -inset-full bg-conic from-transparent via-chart-2 to-transparent"
                     animate={{ rotate: -360 }}
                     transition={{
                       duration: 9,
