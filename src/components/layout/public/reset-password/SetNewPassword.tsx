@@ -416,13 +416,13 @@ const SetNewPassword = ({ email }: { email: string }) => {
                 href="/login"
                
               >
-                <button  
+                <Button  
                 disabled={isPending}
                 type="button"
                 className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary dark:hover:text-chart-1">
                 <ArrowLeft className="size-4 transition-transform duration-300 group-hover:-translate-x-1" />
                 Back to login
-                </button>
+                </Button>
               </Link>
             </motion.div>
           </div>
