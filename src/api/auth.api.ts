@@ -138,3 +138,12 @@ export function updateUserProfile(payload:IUpdateUserProfile){
 export function getTechnicianCount(){
     return apiClient("/auth/technician-count")
 }
+
+
+//reset pasword
+
+//send otp
+
+export function sendForgotPassOtp(){
+    return apiClient("/auth/forgot-password-otp")
+}
