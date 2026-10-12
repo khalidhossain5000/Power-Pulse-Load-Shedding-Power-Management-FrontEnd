@@ -1,9 +1,22 @@
+/** biome-ignore-all lint/a11y/useAriaPropsSupportedByRole: <explanation> */
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, KeyRound, Mail, Send } from "lucide-react";
-import { MotionConfig, motion, type Variants } from "motion/react";
+import {
+  ArrowLeft,
+  Clock,
+  KeyRound,
+  Mail,
+  MailCheck,
+  Send,
+} from "lucide-react";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  type Variants,
+} from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,6 +65,7 @@ const particles = [
 
 const ResetPassword = () => {
   const { mutate, isPending } = useSendForgotPassOtp();
+
   const [cooldownEndsAt, setCooldownEndsAt] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
 
@@ -65,6 +79,7 @@ const ResetPassword = () => {
         0,
         Math.ceil((cooldownEndsAt - Date.now()) / 1000)
       );
+
       setRemainingSeconds(seconds);
 
       if (seconds === 0) {
@@ -73,6 +88,7 @@ const ResetPassword = () => {
     };
 
     updateRemainingTime();
+
     const intervalId = window.setInterval(updateRemainingTime, 1000);
 
     return () => window.clearInterval(intervalId);
@@ -80,40 +96,47 @@ const ResetPassword = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (cooldownEndsAt !== null) {
       return;
     }
 
     const email = new FormData(e.currentTarget).get("email") as string;
+
     if (!email) {
       toast.error("Email is required Fill it");
       return;
     }
+
     mutate(
       { email },
       {
         onSuccess: () => {
           setCooldownEndsAt(Date.now() + OTP_RESEND_COOLDOWN_MS);
           setRemainingSeconds(OTP_RESEND_COOLDOWN_MS / 1000);
+
           toast("OTP sent successfully!", {
-            description: "Please check your email inbox and spam folder for the OTP.",
+            description:
+              "Please check your email inbox and spam folder for the OTP.",
             action: {
               label: "OK",
-              onClick: () => { },
+              onClick: () => {},
             },
             duration: Infinity,
           });
         },
+
         onError: (err: any) => {
           console.log(
             err,
             "error in otp Sending",
             err?.data?.message || err?.response?._data?.message
           );
+
           toast.error(
             err?.data?.message ||
-            err?.response?._data?.message ||
-            "Something went wrong while OTP sending"
+              err?.response?._data?.message ||
+              "Something went wrong while OTP sending"
           );
         },
       }
@@ -123,6 +146,14 @@ const ResetPassword = () => {
   const formattedRemainingTime = `${Math.floor(remainingSeconds / 60)
     .toString()
     .padStart(2, "0")}:${(remainingSeconds % 60).toString().padStart(2, "0")}`;
+
+  const [formattedMinutes, formattedSeconds] =
+    formattedRemainingTime.split(":");
+
+  const cooldownProgress = Math.min(
+    1,
+    Math.max(0, remainingSeconds / (OTP_RESEND_COOLDOWN_MS / 1000))
+  );
 
   return (
     <MotionConfig reducedMotion="user">
@@ -140,12 +171,14 @@ const ResetPassword = () => {
           animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.15, 1] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         />
+
         <motion.div
           aria-hidden
           className="pointer-events-none absolute -bottom-24 -right-24 -z-10 size-96 rounded-full bg-chart-2/15 blur-3xl"
           animate={{ opacity: [1, 0.4, 1], x: [0, -30, 0] }}
           transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         />
+
         <motion.div
           aria-hidden
           className="pointer-events-none absolute -left-32 top-2/3 -z-10 size-96 rounded-full bg-chart-4/15 blur-3xl"
@@ -194,6 +227,7 @@ const ResetPassword = () => {
               aria-hidden
               className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/60 to-transparent"
             />
+
             <div
               aria-hidden
               className="pointer-events-none absolute -top-24 left-1/2 size-56 -translate-x-1/2 rounded-full bg-primary/15 blur-3xl"
@@ -246,6 +280,7 @@ const ResetPassword = () => {
                     ease: "easeInOut",
                   }}
                 />
+
                 <div className="relative flex size-full items-center justify-center rounded-full border border-primary/30 bg-linear-to-br from-primary/20 to-primary/5 backdrop-blur-md dark:border-chart-1/30">
                   <motion.div
                     animate={{ rotate: [0, -14, 14, -8, 0, 0, 0] }}
@@ -303,7 +338,9 @@ const ResetPassword = () => {
                     aria-hidden
                     className="absolute -inset-0.5 rounded-xl bg-linear-to-r from-primary/0 via-primary/50 to-chart-1/0 opacity-0 blur-md transition-opacity duration-300 group-focus-within:opacity-100"
                   />
+
                   <Mail className="absolute left-3.5 top-1/2 z-10 size-4 -translate-y-1/2 text-muted-foreground transition-colors duration-300 group-focus-within:text-primary dark:group-focus-within:text-chart-1" />
+
                   <Input
                     id="reset-email"
                     name="email"
@@ -315,15 +352,99 @@ const ResetPassword = () => {
                   />
                 </div>
 
-                <p className="text-xs text-muted-foreground">
-                  We&apos;ll send a one-time password (OTP) to this email.
-                </p>
-                {cooldownEndsAt !== null && (
-                  <p aria-live="polite" className="text-xs text-muted-foreground">
-                    OTP already sent to that email. Try again in{" "}
-                    {formattedRemainingTime}.
-                  </p>
-                )}
+                <AnimatePresence mode="wait" initial={false}>
+                  {cooldownEndsAt !== null ? (
+                    <motion.div
+                      key="cooldown"
+                      role="status"
+                      aria-live="polite"
+                      initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="relative mt-3 overflow-hidden rounded-2xl border border-primary/25 bg-linear-to-br from-primary/10 via-primary/5 to-transparent p-4 shadow-sm dark:border-chart-1/30"
+                    >
+                      {/* Soft glow */}
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute -right-8 -top-8 size-24 rounded-full bg-primary/20 blur-2xl"
+                      />
+
+                      <div className="relative flex items-center gap-3.5">
+                        {/* Icon */}
+                        <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-primary/15 text-primary dark:border-chart-1/30 dark:text-chart-1">
+                          <MailCheck className="size-5" strokeWidth={2} />
+                        </div>
+
+                        {/* Text */}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold leading-5 text-foreground sm:text-base">
+                            OTP Sent To That Email
+                          </p>
+                          <p className="mt-0.5 text-xs leading-5 text-muted-foreground sm:text-sm">
+                            You can request a new one after the timer ends.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Timer */}
+                      <div className="relative mt-4 flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/70 px-4 py-3 backdrop-blur-sm">
+                        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                          <Clock className="size-4 text-primary dark:text-chart-1" />
+                          Try again in
+                        </div>
+
+                        <div
+                          className="flex items-baseline gap-1 font-inter font-bold tabular-nums text-primary dark:text-chart-1"
+                          aria-label={`${formattedMinutes} minutes ${formattedSeconds} seconds`}
+                        >
+                          <span className="rounded-lg bg-primary/10 px-2.5 py-1 text-2xl leading-none sm:text-3xl">
+                            {formattedMinutes}
+                          </span>
+                          <motion.span
+                            aria-hidden
+                            className="text-2xl leading-none sm:text-3xl"
+                            animate={{ opacity: [1, 0.25, 1] }}
+                            transition={{
+                              duration: 1,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                          >
+                            :
+                          </motion.span>
+                          <span className="rounded-lg bg-primary/10 px-2.5 py-1 text-2xl leading-none sm:text-3xl">
+                            {formattedSeconds}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div
+                        aria-hidden
+                        className="relative mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted"
+                      >
+                        <motion.div
+                          className="h-full rounded-full bg-linear-to-r from-primary to-chart-1"
+                          initial={false}
+                          animate={{ width: `${cooldownProgress * 100}%` }}
+                          transition={{ duration: 1, ease: "linear" }}
+                        />
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.p
+                      key="helper"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-xs text-muted-foreground"
+                    >
+                      We&apos;ll send a one-time password (OTP) to this email.
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               </div>
 
               <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
@@ -344,7 +465,11 @@ const ResetPassword = () => {
                       ease: "easeInOut",
                     }}
                   />
-                  <span className="relative">{isPending ? "Sending Otp........" : "Send OTP"}</span>
+
+                  <span className="relative">
+                    {isPending ? "Sending Otp........" : "Send OTP"}
+                  </span>
+
                   <Send className="relative size-4 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-1" />
                 </Button>
               </motion.div>
