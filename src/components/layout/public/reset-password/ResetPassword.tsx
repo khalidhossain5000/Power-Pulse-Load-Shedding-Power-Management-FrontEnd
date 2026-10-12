@@ -62,7 +62,14 @@ const ResetPassword = () => {
       { email },
       {
         onSuccess: async (res) => {
-          toast.success("You account is verified and active now");
+          toast("OTP sent successfully!", {
+            description: "Please check your email inbox and spam folder for the OTP.",
+            action: {
+              label: "OK",
+              onClick: () => { },
+            },
+            duration: Infinity,
+          });
         },
         onError: (err: any) => {
           console.log(
@@ -72,8 +79,8 @@ const ResetPassword = () => {
           );
           toast.error(
             err?.data?.message ||
-              err?.response?._data?.message ||
-              "Something went wrong while OTP sending"
+            err?.response?._data?.message ||
+            "Something went wrong while OTP sending"
           );
         },
       }
@@ -278,7 +285,8 @@ const ResetPassword = () => {
               <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
                 <Button
                   type="submit"
-                  className="group/btn relative h-12 w-full cursor-pointer gap-2 overflow-hidden rounded-xl text-base font-semibold shadow-lg shadow-primary/30"
+                  disabled={isPending}
+                  className="group/btn relative h-12 w-full cursor-pointer gap-2 overflow-hidden rounded-xl text-base font-semibold shadow-lg shadow-primary/30 disabled:cursor-not-allowed"
                 >
                   <motion.span
                     aria-hidden
@@ -292,7 +300,7 @@ const ResetPassword = () => {
                       ease: "easeInOut",
                     }}
                   />
-                  <span className="relative">Send OTP</span>
+                  <span className="relative">{isPending ? "Sending Otp........" : "Send OTP"}</span>
                   <Send className="relative size-4 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-1" />
                 </Button>
               </motion.div>
