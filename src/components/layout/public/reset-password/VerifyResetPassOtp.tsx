@@ -8,7 +8,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Field, FieldDescription, FieldError } from "@/components/ui/field";
-import { useResendOtp, useVerifyEmail } from "@/hooks";
+import {  useVerifyForgotPassOtp } from "@/hooks";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,27 +25,13 @@ const VerifyResetPassOtpFields = ({ email }: { email: string }) => {
   const [otp, setOtp] = useState("");
 
   const [isInvalid, setIsInvalid] = useState(false);
-  const { mutate: verifyEmail, isPending } = useVerifyEmail();
-  const { mutate: resendCode, isPending: resendPending } = useResendOtp();
+  const { mutate: verifyOtp, isPending } = useVerifyForgotPassOtp();
+  
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
-  //resend timer handler
-  useEffect(() => {
-    const resendTimer = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(resendTimer);
-          return 0;
-        }
-
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(resendTimer);
-  }, []);
+  
 
   const handleSubmitOtp = () => {
 
@@ -61,15 +47,15 @@ const VerifyResetPassOtpFields = ({ email }: { email: string }) => {
     };
 
     //--data is ready go for the api hit
-    verifyEmail(verifyData, {
+    verifyOtp(verifyData, {
       onSuccess: async (res) => {
     
-        toast.success("You account is verified and active now");
+        toast.success("Otp verified now you can reset password ");
 
-        // backend auto-logs in on verify, so refresh the cached user first
-        await queryClient.invalidateQueries({ queryKey: ["user"] });
 
-        router.replace(getSafeRedirect(searchParams.get("redirect")));
+        router.push(
+            `/reset-password/set-new-password?email=${encodeURIComponent(email)}`
+          );
       },
       onError: (err: any) => {
         console.log(
@@ -86,35 +72,7 @@ const VerifyResetPassOtpFields = ({ email }: { email: string }) => {
     });
   };
 
-  //resend otp handler
-
-  const handleResendOtp = () => {
-    if (timer !== 0) return;
-
-    resendCode(
-      { email },
-      {
-        onSuccess: (res) => {
-    
-          toast.success(res.message || "OTP resent successfully,check now.");
-          setTimer(RESEND_COOLDOWN);
-        },
-        onError: (err: any) => {
-          console.log(
-            err,
-            "error in otp resend",
-            err?.data?.message || err?.response?._data?.message
-          );
-          toast.error(
-            err?.data?.message ||
-              err?.response?._data?.message ||
-              "Something went wrong while OTP resend"
-          );
-        },
-      }
-    );
-  };
-
+ 
   return (
     <Card className="border-0 ring-0 shadow-none p-0">
       <CardContent className="px-0">
@@ -160,12 +118,7 @@ const VerifyResetPassOtpFields = ({ email }: { email: string }) => {
               )}
             </div>
 
-            <FieldDescription className="text-sm text-center">
-              Didn&apos;t receive the code?{" "}
-              <span className="font-medium text-foreground">
-                Resend in {timer} s
-              </span>
-            </FieldDescription>
+         
           </Field>
         </form>
       </CardContent>
@@ -179,20 +132,10 @@ const VerifyResetPassOtpFields = ({ email }: { email: string }) => {
             isPending && "cursor:not-allowed"
           }`}
         >
-          {isPending ? "Verifying....." : "Verify Account"}
+          {isPending ? "Verifying....." : "Verify Otp"}
         </Button>
 
-        <Button
-          type="button"
-          disabled={timer !== 0 || resendPending}
-          onClick={handleResendOtp}
-          variant="outline"
-          className={`w-full rounded-xl h-10 text-muted-foreground hover:text-foreground border-primary/50 ${
-            timer !== 0 ? "cursor-not-allowed" : "cursor-pointer"
-          }`}
-        >
-          {resendPending ? "Resending....." : "Resend Code"}
-        </Button>
+     
       </CardFooter>
     </Card>
   );
