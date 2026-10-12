@@ -26,7 +26,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useResetPassword } from "@/hooks";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+
 
 // full circle (r = 46) starting at 3 o'clock, drawn clockwise
 const RING_PATH = "M96 50a46 46 0 1 1-92 0a46 46 0 1 1 92 0";
@@ -85,7 +85,7 @@ const SetNewPassword = ({ email }: { email: string }) => {
   const score = checks.filter((check) => check.passed).length;
   const level = strengthLevels[score];
   const isLocked = score >= 3;
-  const router = useRouter();
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -114,7 +114,7 @@ const SetNewPassword = ({ email }: { email: string }) => {
           duration: Infinity,
         });
 
-        router.push(`/login`);
+   
       },
 
       onError: (err: any) => {
@@ -389,7 +389,8 @@ const SetNewPassword = ({ email }: { email: string }) => {
               <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
                 <Button
                   type="submit"
-                  className="group/btn relative h-12 w-full cursor-pointer gap-2 overflow-hidden rounded-xl text-base font-semibold shadow-lg shadow-primary/30"
+                  disabled={isPending}
+                  className="group/btn relative h-12 w-full cursor-pointer gap-2 overflow-hidden rounded-xl text-base font-semibold shadow-lg shadow-primary/30 disabled:cursor-not-allowed"
                 >
                   <motion.span
                     aria-hidden
@@ -404,7 +405,7 @@ const SetNewPassword = ({ email }: { email: string }) => {
                     }}
                   />
                   <ShieldCheck className="relative size-4" />
-                  <span className="relative">Update password</span>
+                  <span className="relative"> {isPending ? "Resetting Password...." : "Reset Password" }</span>
                 </Button>
               </motion.div>
             </motion.form>
