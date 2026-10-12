@@ -88,7 +88,7 @@ export default function LoginForm({ quickLoginAccounts }: { quickLoginAccounts: 
                     value={field.state.value}
                     autoComplete="username"
                     aria-invalid={isInvalid}
-                    className="bg-background rounded-xl shadow-sm "
+                    className="h-12 rounded-xl border-border bg-background shadow-sm transition-shadow focus-visible:ring-primary/20"
                     placeholder="Enter Your Email Address"
                   />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
