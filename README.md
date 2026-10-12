@@ -123,8 +123,8 @@ Power Pulse has three roles: **Admin**, **Technician** and **Customer**. Custome
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/khalidhossain5000/Next-Level-Assignment-7.git
-   cd Next-Level-Assignment-7
+   git clone https://github.com/khalidhossain5000/Power-Pulse-Load-Shedding-Power-Management-FrontEnd.git
+   cd Power-Pulse-Load-Shedding-Power-Management-FrontEnd
    ```
 
 2. **Install dependencies**
