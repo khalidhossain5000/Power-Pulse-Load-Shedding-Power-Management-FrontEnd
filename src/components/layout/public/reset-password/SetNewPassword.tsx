@@ -414,10 +414,15 @@ const SetNewPassword = ({ email }: { email: string }) => {
             <motion.div variants={itemVariants} className="mt-6">
               <Link
                 href="/login"
-                className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary dark:hover:text-chart-1"
+               
               >
+                <button  
+                disabled={isPending}
+                type="button"
+                className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary dark:hover:text-chart-1">
                 <ArrowLeft className="size-4 transition-transform duration-300 group-hover:-translate-x-1" />
                 Back to login
+                </button>
               </Link>
             </motion.div>
           </div>
