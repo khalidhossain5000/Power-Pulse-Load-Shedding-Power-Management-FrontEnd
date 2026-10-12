@@ -1,4 +1,4 @@
-# Power Pulse - Load Shedding & Power Management Platform ⚡
+# Power Pulse - Load Shedding & Power Management Web App Platform ⚡
 
 **Live demo:** [Click here to view](https://next-level-assignment-7.vercel.app)
 
