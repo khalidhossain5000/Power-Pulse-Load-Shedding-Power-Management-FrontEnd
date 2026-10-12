@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSendForgotPassOtp } from "@/hooks";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const OTP_RESEND_COOLDOWN_MS = 5 * 60 * 1000;
 
@@ -65,7 +66,7 @@ const particles = [
 
 const ResetPassword = () => {
   const { mutate, isPending } = useSendForgotPassOtp();
-
+  const router = useRouter()
   const [cooldownEndsAt, setCooldownEndsAt] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
 
@@ -120,10 +121,14 @@ const ResetPassword = () => {
               "Please check your email inbox and spam folder for the OTP.",
             action: {
               label: "OK",
-              onClick: () => {},
+              onClick: () => { },
             },
             duration: Infinity,
           });
+
+          router.push(
+            `/reset-password/verify-otp?email=${encodeURIComponent(email)}`
+          );
         },
 
         onError: (err: any) => {
@@ -135,8 +140,8 @@ const ResetPassword = () => {
 
           toast.error(
             err?.data?.message ||
-              err?.response?._data?.message ||
-              "Something went wrong while OTP sending"
+            err?.response?._data?.message ||
+            "Something went wrong while OTP sending"
           );
         },
       }

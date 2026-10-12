@@ -1,4 +1,4 @@
-import { approveTechnicanProfile, getAllTechnician, getAllUsers, getMe, getTechnicianCount, googleLogin, registerUser, resendOtp, sendForgotPassOtp, updateTechProfile, updateUserProfile, updateUserStatus, userLogin, userLogout, verifyUserEmail } from "@/api";
+import { approveTechnicanProfile, getAllTechnician, getAllUsers, getMe, getTechnicianCount, googleLogin, registerUser, resendOtp, resetPassword, sendForgotPassOtp, updateTechProfile, updateUserProfile, updateUserStatus, userLogin, userLogout, verifyResetOtp, verifyUserEmail } from "@/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useLogin(){
@@ -140,5 +140,19 @@ export function useGetTechnicianCount(){
 export function useSendForgotPassOtp(){
     return useMutation({
             mutationFn:sendForgotPassOtp,
+    })
+}
+
+
+export function useVerifyForgotPassOtp(){
+    return useMutation({
+        mutationFn:verifyResetOtp
+    })
+}
+
+
+export function useResetPassword(){
+    return useMutation({
+        mutationFn:resetPassword
     })
 }
