@@ -509,7 +509,9 @@ const PromotionSection = () => {
               <AnimatePresence mode="wait" initial={false}>
                 {!isPending && (
                   <motion.p
-                    key={isCustomer ? "customer" : isOtherRole ? "other" : "out"}
+                    key={
+                      isCustomer ? "customer" : isOtherRole ? "other" : "out"
+                    }
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
