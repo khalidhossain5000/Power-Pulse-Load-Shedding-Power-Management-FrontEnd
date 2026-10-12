@@ -24,6 +24,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useResetPassword } from "@/hooks";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 // full circle (r = 46) starting at 3 o'clock, drawn clockwise
 const RING_PATH = "M96 50a46 46 0 1 1-92 0a46 46 0 1 1 92 0";
@@ -64,9 +67,10 @@ const strengthLevels = [
   { label: "Strong", text: "text-chart-2", stroke: "stroke-chart-2" },
 ];
 
-const SetNewPassword = () => {
+const SetNewPassword = ({ email }: { email: string }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { mutate: resetPassword, isPending } = useResetPassword();
 
   const checks = [
     { label: "8+ characters", passed: password.length >= 8 },
@@ -81,7 +85,53 @@ const SetNewPassword = () => {
   const score = checks.filter((check) => check.passed).length;
   const level = strengthLevels[score];
   const isLocked = score >= 3;
+  const router = useRouter();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
+    const newPassword = new FormData(e.currentTarget).get(
+      "newPassword"
+    ) as string;
+
+    if (!email) {
+      toast.error("Email is not found Try Again");
+      return;
+    }
+
+    const payload = {
+      email,
+      newPassword,
+    };
+
+    resetPassword(payload, {
+      onSuccess: () => {
+        toast("Password Reset successfully!", {
+          description: "You can now login using your latest password",
+          action: {
+            label: "OK",
+            onClick: () => {},
+          },
+          duration: Infinity,
+        });
+
+        router.push(`/login`);
+      },
+
+      onError: (err: any) => {
+        console.log(
+          err,
+          "error in otp Sending",
+          err?.data?.message || err?.response?._data?.message
+        );
+
+        toast.error(
+          err?.data?.message ||
+            err?.response?._data?.message ||
+            "Something went wrong while OTP sending"
+        );
+      },
+    });
+  };
   return (
     <MotionConfig reducedMotion="user">
       <section className="relative isolate flex min-h-svh w-full items-center justify-center overflow-hidden px-4 py-16">
@@ -114,7 +164,7 @@ const SetNewPassword = () => {
         >
           <motion.div
             aria-hidden
-            className="absolute -inset-[100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_290deg,var(--primary)_330deg,var(--chart-1)_360deg)]"
+            className="absolute -inset-full bg-[conic-gradient(from_0deg,transparent_0deg,transparent_290deg,var(--primary)_330deg,var(--chart-1)_360deg)]"
             animate={{ rotate: 360 }}
             transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
           />
@@ -238,7 +288,7 @@ const SetNewPassword = () => {
             {/* Form */}
             <motion.form
               variants={itemVariants}
-              onSubmit={(event) => event.preventDefault()}
+              onSubmit={handleSubmit}
               className="mt-8 space-y-5 text-left"
             >
               <div className="space-y-2">
