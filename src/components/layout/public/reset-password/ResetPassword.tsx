@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, KeyRound, Mail, Send } from "lucide-react";
 import { MotionConfig, motion, type Variants } from "motion/react";
@@ -9,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useSendForgotPassOtp } from "@/hooks";
 import { toast } from "sonner";
+
+const OTP_RESEND_COOLDOWN_MS = 5 * 60 * 1000;
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 28, scale: 0.97 },
@@ -49,11 +52,39 @@ const particles = [
 
 const ResetPassword = () => {
   const { mutate, isPending } = useSendForgotPassOtp();
+  const [cooldownEndsAt, setCooldownEndsAt] = useState<number | null>(null);
+  const [remainingSeconds, setRemainingSeconds] = useState(0);
+
+  useEffect(() => {
+    if (cooldownEndsAt === null) {
+      return;
+    }
+
+    const updateRemainingTime = () => {
+      const seconds = Math.max(
+        0,
+        Math.ceil((cooldownEndsAt - Date.now()) / 1000)
+      );
+      setRemainingSeconds(seconds);
+
+      if (seconds === 0) {
+        setCooldownEndsAt(null);
+      }
+    };
+
+    updateRemainingTime();
+    const intervalId = window.setInterval(updateRemainingTime, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [cooldownEndsAt]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (cooldownEndsAt !== null) {
+      return;
+    }
+
     const email = new FormData(e.currentTarget).get("email") as string;
-    console.log(email, "reset email");
     if (!email) {
       toast.error("Email is required Fill it");
       return;
@@ -61,7 +92,9 @@ const ResetPassword = () => {
     mutate(
       { email },
       {
-        onSuccess: async (res) => {
+        onSuccess: () => {
+          setCooldownEndsAt(Date.now() + OTP_RESEND_COOLDOWN_MS);
+          setRemainingSeconds(OTP_RESEND_COOLDOWN_MS / 1000);
           toast("OTP sent successfully!", {
             description: "Please check your email inbox and spam folder for the OTP.",
             action: {
@@ -86,6 +119,11 @@ const ResetPassword = () => {
       }
     );
   };
+
+  const formattedRemainingTime = `${Math.floor(remainingSeconds / 60)
+    .toString()
+    .padStart(2, "0")}:${(remainingSeconds % 60).toString().padStart(2, "0")}`;
+
   return (
     <MotionConfig reducedMotion="user">
       <section className="relative isolate flex min-h-svh w-full items-center justify-center overflow-hidden px-4 py-16">
@@ -280,12 +318,18 @@ const ResetPassword = () => {
                 <p className="text-xs text-muted-foreground">
                   We&apos;ll send a one-time password (OTP) to this email.
                 </p>
+                {cooldownEndsAt !== null && (
+                  <p aria-live="polite" className="text-xs text-muted-foreground">
+                    OTP already sent to that email. Try again in{" "}
+                    {formattedRemainingTime}.
+                  </p>
+                )}
               </div>
 
               <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}>
                 <Button
                   type="submit"
-                  disabled={isPending}
+                  disabled={isPending || cooldownEndsAt !== null}
                   className="group/btn relative h-12 w-full cursor-pointer gap-2 overflow-hidden rounded-xl text-base font-semibold shadow-lg shadow-primary/30 disabled:cursor-not-allowed"
                 >
                   <motion.span

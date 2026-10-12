@@ -150,3 +150,23 @@ export function sendForgotPassOtp(payload:{email:string}){
         body:payload
     })
 }
+
+
+
+export function verifyResetOtp(payload:{email:string,otp:string}){
+    return apiClient("/auth/verify-password-otp",{
+        method:"POST",
+        body:payload
+    })
+}
+
+
+export function resetPassword(payload:{
+    email:string;
+    newPassword:string
+}){
+      return apiClient("/auth/reset-password",{
+        method:"POST",
+        body:payload
+    })
+}
