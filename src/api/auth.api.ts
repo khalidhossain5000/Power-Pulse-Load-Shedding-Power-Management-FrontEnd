@@ -166,7 +166,7 @@ export function resetPassword(payload:{
     newPassword:string
 }){
       return apiClient("/auth/reset-password",{
-        method:"POST",
+        method:"PATCH",
         body:payload
     })
 }
