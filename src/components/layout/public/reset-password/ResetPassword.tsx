@@ -189,7 +189,7 @@ console.log(email,"reset email")
                 </div>
               </div>
             </motion.div>
-<form onSubmit={handleSubmit}>
+
             {/* Title */}
             <motion.h1
               variants={itemVariants}
@@ -213,7 +213,7 @@ console.log(email,"reset email")
             {/* Form */}
             <motion.form
               variants={itemVariants}
-              onSubmit={(event) => event.preventDefault()}
+              onSubmit={handleSubmit}
               className="mt-8 space-y-5 text-left"
             >
               <div className="space-y-2">
@@ -268,7 +268,7 @@ console.log(email,"reset email")
                 </Button>
               </motion.div>
             </motion.form>
-</form>
+
             {/* Back to login */}
             <motion.div variants={itemVariants} className="mt-6">
               <Link
