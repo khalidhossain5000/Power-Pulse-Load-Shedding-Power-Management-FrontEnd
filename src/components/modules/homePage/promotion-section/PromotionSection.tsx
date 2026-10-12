@@ -271,6 +271,9 @@ const RestoreQueue = ({ reduce }: { reduce: boolean }) => {
 const PromotionSection = () => {
   const { data: user, isPending } = useGetMe();
   const isLoggedIn = !!user;
+  const role = user?.data?.role;
+  const isCustomer = isLoggedIn && role === "CUSTOMER";
+  const isOtherRole = isLoggedIn && !isCustomer;
 
   const reduce = !!useReducedMotion();
   const priceRef = useRef<HTMLDivElement>(null);
@@ -294,8 +297,8 @@ const PromotionSection = () => {
     return () => controls.stop();
   }, [priceInView, reduce, count]);
 
-  const ctaHref = isLoggedIn ? "/customer/dashboard" : "/login";
-  const ctaLabel = isLoggedIn ? "Go to dashboard" : "Sign in to get priority";
+  const ctaHref = isCustomer ? "/customer/dashboard" : "/login";
+  const ctaLabel = isCustomer ? "Go to dashboard" : "Sign in to get priority";
 
   return (
     <section className="relative isolate w-full overflow-hidden bg-background px-4 py-20 font-inter text-foreground sm:px-6 sm:py-28 lg:px-8">
@@ -422,6 +425,26 @@ const PromotionSection = () => {
                     aria-busy
                     className="h-14 w-full animate-pulse rounded-2xl bg-muted sm:w-52"
                   />
+                ) : isOtherRole ? (
+                  <div
+                    aria-disabled
+                    className="flex h-14 cursor-not-allowed items-center justify-center gap-2 rounded-2xl border border-border bg-muted px-6 text-base font-semibold text-muted-foreground"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <rect x="4" y="11" width="16" height="10" rx="2" />
+                      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                    </svg>
+                    <span className="whitespace-nowrap">Customers only</span>
+                  </div>
                 ) : (
                   <motion.div
                     whileHover={reduce ? undefined : { scale: 1.04, y: -2 }}
@@ -446,7 +469,7 @@ const PromotionSection = () => {
                           }}
                         />
                       )}
-                      {isLoggedIn ? (
+                      {isCustomer ? (
                         <svg
                           className="relative"
                           width="18"
@@ -486,14 +509,16 @@ const PromotionSection = () => {
               <AnimatePresence mode="wait" initial={false}>
                 {!isPending && (
                   <motion.p
-                    key={isLoggedIn ? "in" : "out"}
+                    key={isCustomer ? "customer" : isOtherRole ? "other" : "out"}
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.25 }}
                   >
-                    {isLoggedIn ? (
+                    {isCustomer ? (
                       "You're signed in. Report an outage from your dashboard whenever you need it."
+                    ) : isOtherRole ? (
+                      "Outage reporting is available for customer accounts only."
                     ) : (
                       <>
                         You need an account to report an outage.{" "}
