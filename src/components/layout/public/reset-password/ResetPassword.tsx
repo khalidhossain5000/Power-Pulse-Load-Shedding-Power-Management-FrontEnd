@@ -7,6 +7,7 @@ import { MotionConfig, motion, type Variants } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useSendForgotPassOtp } from "@/hooks";
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 28, scale: 0.97 },
@@ -42,6 +43,13 @@ const particles = [
 ];
 
 const ResetPassword = () => {
+  const {mutate,isPending} = useSendForgotPassOtp()
+
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const email = new FormData(e.currentTarget).get("email");
+console.log(email,"reset email")
+  }
   return (
     <MotionConfig reducedMotion="user">
       <section className="relative isolate flex min-h-svh w-full items-center justify-center overflow-hidden px-4 py-16">
@@ -101,7 +109,7 @@ const ResetPassword = () => {
         >
           <motion.div
             aria-hidden
-            className="absolute -inset-[100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_290deg,var(--primary)_330deg,var(--chart-1)_360deg)]"
+            className="absolute -inset-full bg-[conic-gradient(from_0deg,transparent_0deg,transparent_290deg,var(--primary)_330deg,var(--chart-1)_360deg)]"
             animate={{ rotate: 360 }}
             transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
           />
@@ -181,7 +189,7 @@ const ResetPassword = () => {
                 </div>
               </div>
             </motion.div>
-
+<form onSubmit={handleSubmit}>
             {/* Title */}
             <motion.h1
               variants={itemVariants}
@@ -260,7 +268,7 @@ const ResetPassword = () => {
                 </Button>
               </motion.div>
             </motion.form>
-
+</form>
             {/* Back to login */}
             <motion.div variants={itemVariants} className="mt-6">
               <Link
