@@ -419,7 +419,7 @@ const SetNewPassword = ({ email }: { email: string }) => {
                 <Button  
                 disabled={isPending}
                 type="button"
-                className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary dark:hover:text-chart-1">
+                className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary dark:hover:text-chart-1 disabled:cursor-not-allowed">
                 <ArrowLeft className="size-4 transition-transform duration-300 group-hover:-translate-x-1" />
                 Back to login
                 </Button>

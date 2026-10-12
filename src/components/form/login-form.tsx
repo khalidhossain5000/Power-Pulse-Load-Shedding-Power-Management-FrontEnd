@@ -104,7 +104,15 @@ export default function LoginForm({ quickLoginAccounts }: { quickLoginAccounts: 
 
               return (
                 <Field data-invalid={isInvalid}>
-                  <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                  <div className="flex items-center justify-between gap-3">
+                    <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                    <Link
+                      href="/reset-password"
+                      className="text-xs font-semibold text-primary underline-offset-4 transition-colors hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
                   <div className="relative">
                     <Input
                       id={field.name}
@@ -115,7 +123,7 @@ export default function LoginForm({ quickLoginAccounts }: { quickLoginAccounts: 
                       value={field.state.value}
                       autoComplete="current-password"
                       aria-invalid={isInvalid}
-                      className="bg-background rounded-xl shadow-sm"
+                      className="h-12 rounded-xl border-border bg-background pr-10 shadow-sm transition-shadow focus-visible:ring-primary/20"
                       placeholder="Enter Your Password"
                     />
                     <button
@@ -140,8 +148,11 @@ export default function LoginForm({ quickLoginAccounts }: { quickLoginAccounts: 
             }}
           </form.Field>
 
-          <div className="pt-1">
-            <p className="mb-3 text-sm font-semibold text-foreground">Quick login</p>
+          <div className="rounded-2xl border border-border/70 bg-muted/20 p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-foreground">Quick login</p>
+              <span className="text-xs text-muted-foreground">Choose a role</span>
+            </div>
             <div className="grid grid-cols-3 gap-2">
               {quickLoginOptions.map(({ role, label, icon: Icon }) => (
                 <Button
@@ -150,7 +161,7 @@ export default function LoginForm({ quickLoginAccounts }: { quickLoginAccounts: 
                   variant="outline"
                   disabled={isSubmitting || !quickLoginAccounts[role].email || !quickLoginAccounts[role].password}
                   onClick={() => submitLogin(quickLoginAccounts[role], role)}
-                  className="h-auto min-h-16 min-w-0 flex-col gap-1.5 rounded-lg px-2 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary cursor-pointer"
+                  className="h-auto min-h-16 min-w-0 flex-col gap-1.5 rounded-xl border-border/70 bg-background px-2 py-2.5 text-xs font-medium text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/5 hover:text-primary cursor-pointer"
                 >
                   {signingInAs === role ? <Spinner /> : <Icon aria-hidden="true" className="size-4" />}
                   <span className="truncate">{signingInAs === role ? "Signing in" : label}</span>
@@ -159,7 +170,7 @@ export default function LoginForm({ quickLoginAccounts }: { quickLoginAccounts: 
             </div>
           </div>
 
-          <Button type="submit" disabled={isSubmitting} className="min-h-11 w-full rounded-lg font-semibold cursor-pointer">
+          <Button type="submit" disabled={isSubmitting} className="min-h-12 w-full cursor-pointer rounded-xl font-semibold shadow-sm transition-transform hover:-translate-y-0.5">
             {isPending && <Spinner />}
             {isPending ? "Signing in..." : "Sign in"}
           </Button>
