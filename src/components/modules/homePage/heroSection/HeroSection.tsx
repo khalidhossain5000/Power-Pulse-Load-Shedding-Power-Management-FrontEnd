@@ -489,8 +489,8 @@ const HeroSection = () => {
                       Substations
                     </p>
 
-                    <p className="mt-1 font-manrope text-sm font-bold text-foreground">
-                      24
+                    <p className="mt-1 font-manrope text-sm font-bold text-primary">
+                      55 + 
                     </p>
                   </div>
 
