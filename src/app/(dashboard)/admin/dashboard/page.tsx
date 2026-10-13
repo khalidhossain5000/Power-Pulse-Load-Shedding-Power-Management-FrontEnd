@@ -7,7 +7,7 @@ const AdminDashboardHome = () => {
             <DashboardHeader
                 title="Welcome to PowerPulse Admin Dashboard"
                 description="Monitor users, technicians, outages and revenue across the platform at a glance."
-                showDateTime={false}
+                showDateTime={true}
             />
             <div className="py-4">
                 <AdminAnalyticsReport />

@@ -7,7 +7,7 @@ const page = () => {
             <DashboardHeader
                 title="Technician Dashboard Overview"
                 description="Track your spending patterns and account activity at a glance."
-              showDateTime={false}
+              showDateTime={true}
             />
             <div className="py-4">
                 <TechnicianAnalyticsReport />
