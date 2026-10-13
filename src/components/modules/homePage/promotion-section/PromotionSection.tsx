@@ -524,12 +524,12 @@ const PromotionSection = () => {
                     ) : (
                       <>
                         You need an account to report an outage.{" "}
-                        <Link
-                          href="/register"
+                        <span
+                       
                           className="font-medium text-sidebar-primary underline underline-offset-4 transition-colors hover:text-foreground"
                         >
                           Create one in a minute
-                        </Link>
+                        </span>
                       </>
                     )}
                   </motion.p>
