@@ -23,8 +23,8 @@ import { reportOutageSchema } from "@/validation";
 import { toast } from "sonner";
 
 const ReportOutageForm = () => {
-  const { data, isPending: areaPending } = useGetArea();
-
+  const { data, isPending: areaPending ,isError} = useGetArea();
+console.log(data,isError,"are report outage id here error are")
   const { mutate: reportOutage, isPending: reportOutagePending } =
     useReportOutage();
 
