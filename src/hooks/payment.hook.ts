@@ -32,9 +32,9 @@ export function useGetPaymentRecords(page: number = 1, limit: number = 10) {
 }
 
 
-export function useGetInvoiceDownload(){
+export function useGetInvoiceDownload(transId:string){
       return useQuery({
-        queryKey: ["invoice", ],
-        queryFn: () => getDownloadInvoice(),
+        queryKey: ["invoice"],
+        queryFn: () => getDownloadInvoice(transId),
     });
 }
