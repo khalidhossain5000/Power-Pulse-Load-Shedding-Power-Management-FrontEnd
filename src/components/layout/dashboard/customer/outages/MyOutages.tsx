@@ -40,7 +40,7 @@ const MyOutages = () => {
 
   const meta = myOutages?.data?.meta ?? myOutages?.meta;
 
-  // Get the payment records returned by the API.
+
   const paymentRecords: IPaymentRecord[] = payments?.data ?? [];
 
   // Find a completed payment belonging to this specific outage.
