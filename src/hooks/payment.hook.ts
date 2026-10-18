@@ -1,4 +1,4 @@
-import { getAllPaymentRecords, getPaymentDetails, getPayments, makePayment } from "@/api";
+import { getAllPaymentRecords, getDownloadInvoice, getPaymentDetails, getPayments, makePayment } from "@/api";
 import type { IQueryParams } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -28,5 +28,13 @@ export function useGetPaymentRecords(page: number = 1, limit: number = 10) {
     return useQuery({
         queryKey: ["payment-record", page, limit],
         queryFn: () => getAllPaymentRecords(page, limit),
+    });
+}
+
+
+export function useGetInvoiceDownload(){
+      return useQuery({
+        queryKey: ["invoice", ],
+        queryFn: () => getDownloadInvoice(),
     });
 }

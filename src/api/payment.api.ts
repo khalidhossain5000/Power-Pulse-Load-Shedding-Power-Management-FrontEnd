@@ -26,3 +26,11 @@ export function getPaymentDetails(id: string) {
 export function getAllPaymentRecords(page: number = 1, limit: number = 10) {
     return apiClient(`/admin/payment-record?page=${page}&limit=${limit}`);
 }
+
+
+
+//download invoice
+
+export function getDownloadInvoice(transId:string){
+    return apiClient(`/invoice/${transId}/download`)
+}
