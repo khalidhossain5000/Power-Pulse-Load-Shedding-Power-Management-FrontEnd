@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetMyOutages } from "@/hooks";
+import { useGetMyOutages, useGetPaymentRecords } from "@/hooks";
 import { PaginationUi } from "@/components/layout/shared/pagination-ui/PaginationUi";
 import { useUrlListState } from "@/hooks/use-url-list-state.hook";
 
@@ -27,10 +27,11 @@ import EmptyText from "@/components/layout/shared/empty-text/EmptyText";
 const MyOutages = () => {
   const { page, limit, updateQuery } = useUrlListState();
   const { data: myOutages, isPending } = useGetMyOutages({ page, limit });
+  const {data:payments,isPending:paymentPending} = useGetPaymentRecords()
 
   const outages = myOutages?.data?.data ?? myOutages?.data ?? [];
   const meta = myOutages?.data?.meta ?? myOutages?.meta;
-
+  
   const formatDate = (date: string) => {
     return new Date(date).toLocaleString("en-BD", {
       dateStyle: "medium",
@@ -39,6 +40,7 @@ const MyOutages = () => {
   };
 
 
+console.log(outages,"This is all outages this")
 
   if (isPending) {
     return <MyOutagesSkleton />;
