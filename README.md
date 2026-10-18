@@ -53,7 +53,7 @@ Power Pulse has three roles: **Admin**, **Technician** and **Customer**. Custome
 - **Report outages:** report unexpected power outages
 - **Track reports:** see all outages they have reported
 - **Priority outages:** pay to mark an outage as **high priority** so it is handled sooner (payments via **SSLCommerz**)
-- **Payment history:** view all payments from the dashboard
+- **Payment history and invoices:** view payments from the dashboard and download a PDF invoice for a completed payment linked to an outage from **My Outages**
 
 ### All roles
 
