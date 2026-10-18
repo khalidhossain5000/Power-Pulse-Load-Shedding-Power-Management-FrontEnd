@@ -32,5 +32,5 @@ export function getAllPaymentRecords(page: number = 1, limit: number = 10) {
 //download invoice
 
 export function getDownloadInvoice(transId:string){
-    return apiClient(`/invoice/${transId}/download`)
+    return apiClient(`/payment/invoice/${transId}/download`)
 }

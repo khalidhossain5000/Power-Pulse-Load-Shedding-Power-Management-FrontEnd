@@ -59,4 +59,5 @@ export interface IPaymentRecord {
   createdAt: string;
   customer: IPaymentCustomer;
   outage: IPaymentOutage;
+  outageReportId?:string;
 }

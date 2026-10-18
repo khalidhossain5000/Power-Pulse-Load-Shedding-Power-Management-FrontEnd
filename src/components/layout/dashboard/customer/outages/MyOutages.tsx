@@ -1,6 +1,6 @@
 "use client";
 
-import { useGetMyOutages, useGetPaymentRecords } from "@/hooks";
+import { useGetMyOutages, useGetPayments } from "@/hooks";
 import { PaginationUi } from "@/components/layout/shared/pagination-ui/PaginationUi";
 import { useUrlListState } from "@/hooks/use-url-list-state.hook";
 
@@ -16,22 +16,43 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import type { IMyOutage } from "@/types";
+import type { IMyOutage, IPaymentRecord } from "@/types";
+
 import PriorityInfoModal from "@/components/modal/priority-info.modal";
 import UpdateOutageModal from "@/components/modal/update-my-outage.modal";
 import DeleteMyOutageConfirmModal from "@/components/modal/delete-my-outage.modal";
 import MyOutagesSkleton from "@/components/loader/skleton-loading/dashboard/my-outages.skleton";
 import { getPriorityClassName, getStatusClassName } from "@/lib/utils";
 import EmptyText from "@/components/layout/shared/empty-text/EmptyText";
+import DownloadInvoiceButton from "../invoice-download/DownloadInvoiceBtn";
 
 const MyOutages = () => {
   const { page, limit, updateQuery } = useUrlListState();
-  const { data: myOutages, isPending } = useGetMyOutages({ page, limit });
-  const {data:payments,isPending:paymentPending} = useGetPaymentRecords()
 
-  const outages = myOutages?.data?.data ?? myOutages?.data ?? [];
+  const { data: myOutages, isPending } = useGetMyOutages({
+    page,
+    limit,
+  });
+
+  const { data: payments, isPending: paymentPending } = useGetPayments();
+
+  const outages: IMyOutage[] = myOutages?.data?.data ?? myOutages?.data ?? [];
+
   const meta = myOutages?.data?.meta ?? myOutages?.meta;
-  
+
+  // Get the payment records returned by the API.
+  const paymentRecords: IPaymentRecord[] = payments?.data ?? [];
+
+  // Find a completed payment belonging to this specific outage.
+  const getPaidTransactionId = (outageId: string) => {
+    const paidPayment = paymentRecords.find(
+      (payment) =>
+        payment.outageReportId === outageId && payment.status === "COMPLETED"
+    );
+
+    return paidPayment?.transactionId;
+  };
+
   const formatDate = (date: string) => {
     return new Date(date).toLocaleString("en-BD", {
       dateStyle: "medium",
@@ -39,16 +60,16 @@ const MyOutages = () => {
     });
   };
 
-
-console.log(outages,"This is all outages this")
-
-  if (isPending) {
+  if (isPending || paymentPending) {
     return <MyOutagesSkleton />;
   }
 
   if (outages.length === 0) {
     return (
-      <EmptyText title="  No Outages Reported" description="   You have not reported any power outages yet." />
+      <EmptyText
+        title="No Outages Reported"
+        description="You have not reported any power outages yet."
+      />
     );
   }
 
@@ -60,7 +81,7 @@ console.log(outages,"This is all outages this")
           <div className="overflow-x-auto">
             <Table className="border-separate border-spacing-0">
               <TableHeader>
-                <TableRow className="hover:bg-transparent font-inter">
+                <TableRow className="font-inter hover:bg-transparent">
                   <TableHead className="h-12 whitespace-nowrap border-b border-border bg-muted/40 pl-6 font-semibold text-foreground">
                     Cause
                   </TableHead>
@@ -88,11 +109,13 @@ console.log(outages,"This is all outages this")
               </TableHeader>
 
               <TableBody>
-                {outages.map((outage: IMyOutage, index: number) => {
+                {outages.map((outage, index) => {
                   const cellBorder =
                     index !== outages.length - 1
                       ? "border-b border-border"
                       : "";
+
+                  const transId = getPaidTransactionId(outage.id);
 
                   return (
                     <TableRow
@@ -152,22 +175,31 @@ console.log(outages,"This is all outages this")
 
                       {/* Actions */}
                       <TableCell className={`pr-6 ${cellBorder}`}>
-                        {outage.status === "RESTORED" ? (
-                          <p className="text-right text-sm font-medium text-green-700 dark:text-green-400">
-                            Congratulations! Power has been restored.
-                          </p>
-                        ) : (
-                          <div className="flex items-center justify-end gap-1.5">
-                            {outage.priority === "NORMAL" && (
-                              <PriorityInfoModal outageId={outage.id} />
-                            )}
+                        <div className="flex items-center justify-end gap-1.5">
+                          {transId && (
+                            <DownloadInvoiceButton transId={transId} />
+                          )}
 
-                            <UpdateOutageModal outage={outage} />
-                            {outage.status === "REPORTED" && (
-                              <DeleteMyOutageConfirmModal outageId={outage.id} />
-                            )}
-                          </div>
-                        )}
+                          {outage.status === "RESTORED" ? (
+                            <p className="text-right text-sm font-medium text-green-700 dark:text-green-400">
+                              Congratulations! Power has been restored.
+                            </p>
+                          ) : (
+                            <>
+                              {outage.priority === "NORMAL" && (
+                                <PriorityInfoModal outageId={outage.id} />
+                              )}
+
+                              <UpdateOutageModal outage={outage} />
+
+                              {outage.status === "REPORTED" && (
+                                <DeleteMyOutageConfirmModal
+                                  outageId={outage.id}
+                                />
+                              )}
+                            </>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -178,156 +210,170 @@ console.log(outages,"This is all outages this")
         </div>
       </div>
 
-      {/* Mobile */}
+      {/* Tablet and Mobile */}
       <div className="space-y-3 xl:hidden">
-        {outages.map((outage: IMyOutage) => (
-          <Card
-            key={outage.id}
-            className="rounded-xl border-border bg-card shadow-sm transition-colors hover:bg-muted/20"
-          >
-            <CardContent className="hidden px-4 py-3 sm:block sm:px-5 sm:py-3.5">
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                {/* Cause + Area */}
-                <div className="min-w-0 flex-1 pr-2">
-                  <div className="flex min-w-0 flex-wrap items-center gap-2">
-                    <p className="truncate text-sm font-semibold text-card-foreground sm:text-base">
-                      {outage.cause}
-                    </p>
+        {outages.map((outage) => {
+          const transId = getPaidTransactionId(outage.id);
 
-                    <span className="hidden shrink-0 text-xs text-muted-foreground md:inline">
-                      #{outage.id.slice(0, 8)}
-                    </span>
+          return (
+            <Card
+              key={outage.id}
+              className="rounded-xl border-border bg-card shadow-sm transition-colors hover:bg-muted/20"
+            >
+              {/* Tablet */}
+              <CardContent className="hidden px-4 py-3 sm:block sm:px-5 sm:py-3.5">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                  <div className="min-w-0 flex-1 pr-2">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2">
+                      <p className="truncate text-sm font-semibold text-card-foreground sm:text-base">
+                        {outage.cause}
+                      </p>
 
-                    <Badge
-                      variant="outline"
-                      className={`shrink-0 text-[10px] font-semibold ${getStatusClassName(
-                        outage.status
-                      )}`}
-                    >
-                      {outage.status.replace("_", " ")}
-                    </Badge>
-                  </div>
-
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {outage.area?.name ?? "N/A"}
-                    {outage.area?.code && (
-                      <span className="hidden md:inline">
-                        {" "}
-                        &middot; {outage.area.code}
+                      <span className="hidden shrink-0 text-xs text-muted-foreground md:inline">
+                        #{outage.id.slice(0, 8)}
                       </span>
-                    )}
-                  </p>
-                </div>
 
-                {/* Priority */}
-                <Badge
-                  variant="outline"
-                  className={`hidden shrink-0 md:inline-flex ${getPriorityClassName(
-                    outage.priority
-                  )}`}
-                >
-                  {outage.priority}
-                </Badge>
+                      <Badge
+                        variant="outline"
+                        className={`shrink-0 text-[10px] font-semibold ${getStatusClassName(
+                          outage.status
+                        )}`}
+                      >
+                        {outage.status.replace("_", " ")}
+                      </Badge>
+                    </div>
 
-                {/* Reported */}
-                <div className="hidden shrink-0 lg:block">
-                  <p className="text-[11px] text-muted-foreground">Reported</p>
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      {outage.area?.name ?? "N/A"}
 
-                  <p className="text-xs font-medium text-card-foreground">
-                    {formatDate(outage.reported_At)}
-                  </p>
-                </div>
-
-                {/* Actions */}
-                <div className="flex shrink-0 items-center gap-1">
-                  {outage.status === "RESTORED" ? (
-                    <p className="text-right text-sm font-medium text-green-700 dark:text-green-400">
-                      Congratulations! Power has been restored.
-                    </p>
-                  ) : (
-                    <>
-                      {outage.priority === "NORMAL" && (
-                        <PriorityInfoModal outageId={outage.id} />
+                      {outage.area?.code && (
+                        <span className="hidden md:inline">
+                          {" "}
+                          &middot; {outage.area.code}
+                        </span>
                       )}
-
-                      <UpdateOutageModal outage={outage} />
-
-                      {outage.status === "REPORTED" && (
-                        <DeleteMyOutageConfirmModal outageId={outage.id} />
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-
-            <CardContent className="px-4 py-3 sm:hidden">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <p className="truncate text-sm font-semibold text-card-foreground">
-                      {outage.cause}
                     </p>
-
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
-                      #{outage.id.slice(0, 8)}
-                    </span>
                   </div>
 
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {outage.area?.name ?? "N/A"}
-                  </p>
-                </div>
-
-                <Badge
-                  variant="outline"
-                  className={`shrink-0 whitespace-nowrap text-[10px] font-semibold ${getStatusClassName(
-                    outage.status
-                  )}`}
-                >
-                  {outage.status.replace("_", " ")}
-                </Badge>
-              </div>
-
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-2.5">
-                <div className="flex flex-wrap items-center gap-2">
                   <Badge
                     variant="outline"
-                    className={`text-[10px] ${getPriorityClassName(
+                    className={`hidden shrink-0 md:inline-flex ${getPriorityClassName(
                       outage.priority
                     )}`}
                   >
                     {outage.priority}
                   </Badge>
 
-                  <span className="text-[11px] text-muted-foreground">
-                    {formatDate(outage.reported_At)}
-                  </span>
-                </div>
-
-                <div className="flex shrink-0 items-center gap-1">
-                  {outage.status === "RESTORED" ? (
-                    <p className="text-right text-sm font-medium text-green-700 dark:text-green-400">
-                      Congratulations! Power has been restored.
+                  <div className="hidden shrink-0 lg:block">
+                    <p className="text-[11px] text-muted-foreground">
+                      Reported
                     </p>
-                  ) : (
-                    <>
-                      {outage.priority === "NORMAL" && (
-                        <PriorityInfoModal outageId={outage.id} />
-                      )}
 
-                      <UpdateOutageModal outage={outage} />
+                    <p className="text-xs font-medium text-card-foreground">
+                      {formatDate(outage.reported_At)}
+                    </p>
+                  </div>
 
-                      <DeleteMyOutageConfirmModal outageId={outage.id} />
-                    </>
-                  )}
+                  {/* Actions */}
+                  <div className="flex shrink-0 items-center gap-1">
+                    {transId && <DownloadInvoiceButton transId={transId} />}
+
+                    {outage.status === "RESTORED" ? (
+                      <p className="text-right text-sm font-medium text-green-700 dark:text-green-400">
+                        Congratulations! Power has been restored.
+                      </p>
+                    ) : (
+                      <>
+                        {outage.priority === "NORMAL" && (
+                          <PriorityInfoModal outageId={outage.id} />
+                        )}
+
+                        <UpdateOutageModal outage={outage} />
+
+                        {outage.status === "REPORTED" && (
+                          <DeleteMyOutageConfirmModal outageId={outage.id} />
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+
+              {/* Mobile */}
+              <CardContent className="px-4 py-3 sm:hidden">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <p className="truncate text-sm font-semibold text-card-foreground">
+                        {outage.cause}
+                      </p>
+
+                      <span className="shrink-0 text-[10px] text-muted-foreground">
+                        #{outage.id.slice(0, 8)}
+                      </span>
+                    </div>
+
+                    <p className="mt-1 truncate text-xs text-muted-foreground">
+                      {outage.area?.name ?? "N/A"}
+                    </p>
+                  </div>
+
+                  <Badge
+                    variant="outline"
+                    className={`shrink-0 whitespace-nowrap text-[10px] font-semibold ${getStatusClassName(
+                      outage.status
+                    )}`}
+                  >
+                    {outage.status.replace("_", " ")}
+                  </Badge>
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-2.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] ${getPriorityClassName(
+                        outage.priority
+                      )}`}
+                    >
+                      {outage.priority}
+                    </Badge>
+
+                    <span className="text-[11px] text-muted-foreground">
+                      {formatDate(outage.reported_At)}
+                    </span>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex shrink-0 items-center gap-1">
+                    {transId && <DownloadInvoiceButton transId={transId} />}
+
+                    {outage.status === "RESTORED" ? (
+                      <p className="text-right text-sm font-medium text-green-700 dark:text-green-400">
+                        Congratulations! Power has been restored.
+                      </p>
+                    ) : (
+                      <>
+                        {outage.priority === "NORMAL" && (
+                          <PriorityInfoModal outageId={outage.id} />
+                        )}
+
+                        <UpdateOutageModal outage={outage} />
+
+                        {outage.status === "REPORTED" && (
+                          <DeleteMyOutageConfirmModal outageId={outage.id} />
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
+      {/* Pagination */}
       {outages.length > 0 && (
         <div className="w-full min-w-0 border-t border-border/60 pt-5 sm:pt-6">
           <PaginationUi
