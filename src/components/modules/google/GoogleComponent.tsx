@@ -35,10 +35,31 @@ const searchParams = useSearchParams();
             (err as any)?.data?.message || err.message || "Google login failed";
 
           console.log(err, "this is google error", message);
-      Swal.fire({
+Swal.fire({
   icon: "error",
-  title: message || "Google login failed",
+  title: "Google Login Failed",
+  text: message || "Google login failed",
   confirmButtonText: "OK",
+  background: "#0f172a",
+  color: "#f8fafc",
+  confirmButtonColor: "#009689",
+  focusConfirm: true,
+  customClass: {
+    popup: "power-pulse-alert",
+  },
+  didOpen: () => {
+    const popup = Swal.getPopup();
+    const title = Swal.getTitle();
+
+    if (popup) {
+      popup.style.border = "1px solid #2563eb";
+      popup.style.boxShadow = "0 0 25px rgba(37, 99, 235, 0.25)";
+    }
+
+    if (title) {
+      title.style.color = "#3b82f6";
+    }
+  },
 });
         },
       }
