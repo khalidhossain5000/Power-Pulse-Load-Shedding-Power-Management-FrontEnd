@@ -94,7 +94,7 @@ const ManageTechnician = () => {
   const renderAction = (item: Technician, compact = false) => {
     const verificationStatus =
       item.technicianProfile?.technicianvProfileVerificationStatus;
-    console.log(item, "This is item in render action")
+  
     if (verificationStatus === TechnicianProfileStatus.APPROVED) {
       return (
         <span className="flex items-center gap-1 text-xs text-muted-foreground">

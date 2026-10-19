@@ -289,5 +289,3 @@ Both the frontend and the backend are deployed on **Vercel**.
 - GitHub: [@khalidhossain5000](https://github.com/khalidhossain5000)
 
 ---
-
-<p align="center">Built with ⚡ for reliable power management</p>

@@ -20,7 +20,7 @@ const NavBar = () => {
 
   const user = data?.data;
 
-console.log(user,"User data current")
+
 
   const isLoggedIn = !!user;
   const router = useRouter();

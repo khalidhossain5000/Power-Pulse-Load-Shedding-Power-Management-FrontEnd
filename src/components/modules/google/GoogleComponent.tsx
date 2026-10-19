@@ -23,7 +23,7 @@ const searchParams = useSearchParams();
       { idToken, role },
       {
         onSuccess: (res) => {
-          console.log(res, "Success google login res");
+          
           toast.success(res.message || "Google login is successfully")
             router.replace(getSafeRedirect(searchParams.get("redirect")));
 
