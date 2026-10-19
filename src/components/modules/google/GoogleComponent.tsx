@@ -14,8 +14,8 @@ const GoogleLoginComponet = ({
   role?: "ADMIN" | "TECHNICIAN" | "CUSTOMER";
 }) => {
   const { mutate: googleLogin, isPending } = useGoogleLogin();
-const router = useRouter();
-const searchParams = useSearchParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const handleGoogleSuccess = (credentialResponse: { credential?: string }) => {
     const idToken = credentialResponse?.credential;
 
@@ -25,9 +25,9 @@ const searchParams = useSearchParams();
       { idToken, role },
       {
         onSuccess: (res) => {
-          
+
           toast.success(res.message || "Google login is successfully")
-            router.replace(getSafeRedirect(searchParams.get("redirect")));
+          router.replace(getSafeRedirect(searchParams.get("redirect")));
 
         },
         onError: (err) => {
@@ -35,32 +35,44 @@ const searchParams = useSearchParams();
             (err as any)?.data?.message || err.message || "Google login failed";
 
           console.log(err, "this is google error", message);
-Swal.fire({
-  icon: "error",
-  title: "Google Login Failed",
-  text: message || "Google login failed",
-  confirmButtonText: "OK",
-  background: "#0f172a",
-  color: "#f8fafc",
-  confirmButtonColor: "#009689",
-  focusConfirm: true,
-  customClass: {
-    popup: "power-pulse-alert",
-  },
-  didOpen: () => {
-    const popup = Swal.getPopup();
-    const title = Swal.getTitle();
+          Swal.fire({
+            icon: "error",
+            title: "Google Login Failed",
+            text: message || "Google login failed",
+            confirmButtonText: "OK",
+            background: "#0f172a",
+            color: "#f8fafc",
+            confirmButtonColor: "#009689",
+            focusConfirm: true,
+            customClass: {
+              popup: "power-pulse-alert",
+            },
+            didOpen: () => {
+              const popup = Swal.getPopup();
+              const title = Swal.getTitle();
+              const button = Swal.getConfirmButton();
 
-    if (popup) {
-      popup.style.border = "1px solid #2563eb";
-      popup.style.boxShadow = "0 0 25px rgba(37, 99, 235, 0.25)";
-    }
+              if (popup) {
+                popup.style.border = "1px solid #2563eb";
+                popup.style.borderRadius = "20px";
+                popup.style.boxShadow = "0 0 25px rgba(37, 99, 235, 0.25)";
+              }
 
-    if (title) {
-      title.style.color = "#3b82f6";
-    }
-  },
-});
+              if (title) {
+                title.style.color = "#3b82f6";
+              }
+
+              if (button) {
+                button.style.backgroundColor = "#009689";
+                button.style.color = "#ffffff";
+                button.style.borderRadius = "10px";
+                button.style.padding = "10px 28px";
+                button.style.fontWeight = "600";
+                button.style.border = "none";
+                button.style.boxShadow = "0 4px 12px rgba(0, 150, 137, 0.3)";
+              }
+            },
+          });
         },
       }
     );
