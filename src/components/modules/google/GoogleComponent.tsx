@@ -6,6 +6,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getSafeRedirect } from "@/lib/redirect";
 import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 
 const GoogleLoginComponet = ({
   role,
@@ -34,7 +35,24 @@ const searchParams = useSearchParams();
             (err as any)?.data?.message || err.message || "Google login failed";
 
           console.log(err, "this is google error", message);
-        
+        Swal.fire({
+  toast: true,
+  position: "top-end",
+  icon: "error",
+  title: message || "Google login failed",
+  showConfirmButton: true,
+  confirmButtonText: "OK",
+  background: "var(--card)",
+  color: "var(--card-foreground)",
+  iconColor: "var(--destructive)",
+  confirmButtonColor: "var(--primary)",
+  didOpen: (popup) => {
+    popup.style.border = "1px solid var(--border)";
+    popup.style.borderRadius = "0.75rem";
+    const btn = popup.querySelector<HTMLElement>(".swal2-confirm");
+    if (btn) btn.style.color = "var(--primary-foreground)";
+  },
+});
         },
       }
     );
