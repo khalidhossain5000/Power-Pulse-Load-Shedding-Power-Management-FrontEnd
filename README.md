@@ -284,7 +284,7 @@ Both the frontend and the backend are deployed on **Vercel**.
 
 ## Author
 
-**Khalid Hossain**
+**Md Khalid Hossain**
 
 - GitHub: [@khalidhossain5000](https://github.com/khalidhossain5000)
 
