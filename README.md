@@ -271,16 +271,6 @@ src/
 
 ---
 
-## Deployment
-
-Both the frontend and the backend are deployed on **Vercel**.
-
-1. Import the repository into Vercel.
-2. Add the environment variables from the [table above](#environment-variables) in **Project Settings → Environment Variables**.
-3. Make sure `NEXT_PUBLIC_BASE_URL_Production` is `/api/v1` and `NEXT_PUBLIC_BACKEND_URL` is your deployed backend URL without `/api/v1`.
-4. Deploy. Every push to the main branch redeploys automatically.
-
----
 
 ## Author
 
